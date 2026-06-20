@@ -1,0 +1,28 @@
+{
+  "name": "PerfectPhoto",
+  "description": "AI写真/人像摄影提示词生成器。基于「拍摄小抄」方法论，通过8步交互问答引导用户构建高质量图片生成prompt。",
+  "version": "1.0.0",
+  "author": "hooji",
+  "license": "MIT",
+  "skills": [
+    {
+      "name": "photo-prompt",
+      "path": ".qoder/skills/photo-prompt/SKILL.md",
+      "description": "AI写真prompt生成器主文件"
+    }
+  ],
+  "references": [
+    {
+      "name": "reference",
+      "path": "reference.md",
+      "description": "原创示例库 + 素材速查表"
+    },
+    {
+      "name": "community-examples",
+      "path": "community-examples.md",
+      "description": "9个社区精选案例（中文+标签）"
+    }
+  ],
+  "tags": ["portrait", "photography", "prompt", "AI写真", "摄影", "图片生成"],
+  "platforms": ["openclaw", "claude-code", "cursor", "codex"]
+}
