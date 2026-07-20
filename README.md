@@ -7,7 +7,9 @@
 > *「不写"好看的美女"，写一份真正能出片的拍摄小抄。」*
 
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-PerfectPhoto-blueviolet)](SKILL.md)
+[![skills.sh](https://skills.sh/b/hooji/PerfectPhoto)](https://skills.sh/hooji/PerfectPhoto)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Claude%20Code%20%7C%20Codex%20%7C%20OpenClaw%20%7C%20Cursor-green)]()
 
 **把「帮我写个写真prompt」变成一份有场景、有光线、有动作骨架的拍摄方案。**
 
@@ -30,6 +32,22 @@
 方法论来自 [上千张 AI 写真实战总结](https://x.com/nanyuan0412/status/2068196633943388501)。
 
 ## 效果示例
+
+**先看由此 prompt 生成的效果：**
+
+| 古风书案 | 魏晋双人 | 柔雾棚拍 |
+|:---:|:---:|:---:|
+| ![古风书案](showcase/ancient-scholar-room-20260620.png) | ![魏晋双人](showcase/weijin-double-portrait-20260620.png) | ![柔雾棚拍](showcase/studio-soft-mist-20260720.png) |
+| 旧木案、鸟笼、古书、窗棂白雾逆光 | 花田、纱衣、远山、自然光 | 奶油柔光、低对比、亮部溢出 |
+
+| 直闪职感 | 都市街拍 |
+|:---:|:---:|
+| ![直闪职感](showcase/flash-office-20260720.png) | ![都市街拍](showcase/urban-street-20260720.png) |
+| CCD 硬阴影、皮肤反光、现场感 | 城市自然光、胶片颗粒、生活感 |
+
+> 覆盖古风/花田/棚拍/直闪/都市五种风格，证明方法论不是只对一种场景有效。更多生成效果图见 `showcase/` 目录。
+
+---
 
 **用户输入：**
 
@@ -119,14 +137,18 @@ npx skills add hooji/PerfectPhoto
 
 ## 它和同类有什么不同
 
-| 维度 | 普通 prompt 生成器 | PerfectPhoto |
-|------|-------------------|-------------|
-| 起点 | 从「美女/帅哥」开始 | 从「这张照片为什么成立」开始 |
-| 场景 | 「室内」「户外」 | 三层空间：前景/人物/背景，有密度 |
-| 光线 | 「柔和的光」 | 从哪来、落哪、造成什么效果 |
-| 动作 | 写死每个角度 | 给身体逻辑，不写死姿势 |
-| 元素关系 | 购物清单 | 所有元素互相认识 |
-| 方法论 | 无 | 「拍摄小抄」实战方法论 |
+| 维度 | 普通 prompt 生成器 | 元素库型（如 skill-prompt-generator） | 仓库型（如 awesome-nano-banana） | PerfectPhoto |
+|------|-------------------|--------------------------------------|----------------------------------|-------------|
+| 起点 | 从「美女/帅哥」开始 | 从元素组合开始 | 从海量 prompt 里翻 | 从「这张照片为什么成立」开始 |
+| 交互 | 无，直接给 prompt | 无，自动组合 | 无，用户自己挑 | **8 步交互引导，每步给选项** |
+| 场景 | 「室内」「户外」 | 标签式场景词 | 看命 | 三层空间：前景/人物/背景，有密度 |
+| 光线 | 「柔和的光」 | 风格标签 | 看命 | 从哪来、落哪、造成什么效果 |
+| 动作 | 写死每个角度 | 姿势标签 | 看命 | 给身体逻辑，不写死姿势 |
+| 元素关系 | 购物清单 | 元素堆叠 | 无关 | **所有元素互相认识** |
+| 方法论 | 无 | 无 | 无 | **「拍摄小抄」实战方法论** |
+| 案例 | 无 | 无 | 有，但无分析 | **9 个社区案例 + 成立点分析** |
+
+> 想找「先问清楚再写」的同类？看看 [portrait-prompt-director-skill](https://github.com/qkgecn93/portrait-prompt-director-skill)（⭐6，定位几乎一样但还没起量）——这个生态位还没人占稳。
 
 ## 文件结构
 
@@ -134,8 +156,8 @@ npx skills add hooji/PerfectPhoto
 PerfectPhoto/
 ├── SKILL.md                 # 主文件：8步交互流程 + 调用规则
 ├── reference.md             # 原创示例库 + 素材速查表
-├── community-examples.md    # 9个社区精选案例（中文+标签）
-├── examples/                # 独立案例文件
+├── community-examples.md    # 9个社区精选案例（中文+标签索引）
+├── showcase/                # 生成效果图（证明方法论能出片）
 ├── README.md                # 本文件
 └── LICENSE                  # MIT
 ```

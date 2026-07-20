@@ -6,8 +6,8 @@
   "license": "MIT",
   "skills": [
     {
-      "name": "photo-prompt",
-      "path": ".qoder/skills/photo-prompt/SKILL.md",
+      "name": "PerfectPhoto",
+      "path": "SKILL.md",
       "description": "AI写真prompt生成器主文件"
     }
   ],
