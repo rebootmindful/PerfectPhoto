@@ -22,6 +22,12 @@
 
 [效果](#效果示例) · [安装](#快速开始) · [触发方式](#触发方式) · [它和同类有什么不同](#它和同类有什么不同) · [快速验证](#快速验证) · [安全边界](#安全边界)
 
+<br>
+
+<div align="center">
+  <img src="poster.png" alt="PerfectPhoto 宣传海报" width="540">
+</div>
+
 </div>
 
 ---
@@ -231,6 +237,24 @@ cat test-prompts.json | head -30
 
 取自 SPEC `NextShotPhoto-SPEC.md`，对标 CVPR 2026 STAGE 论文 + StoryMem (ByteDance) + Gaia Video Factory + ZeroCut Director Notes + Seedance 2.0 Skill OS，走纯 prompt 工程路线而非模型训练路线。
 
+### 分镜效果展示 — 「雨末茶室」3 镜故事板
+
+下面是一组 NextShotPhoto 实际推导并出图的 3 镜分镜链，展示了跨镜人物/氛围锁定 + 运镜变换矩阵的效果：
+
+| Shot 0 — 首帧（原方案） | Shot 1 — 过肩推镜 |
+|:---:|:---:|
+| ![雨末茶室首帧](showcase/%E9%9B%A8%E6%9C%AB%E8%8C%B6%E5%AE%A4.png) | ![雨末茶室过肩推镜](showcase/%E9%9B%A8%E6%9C%AB%E8%8C%B6%E5%AE%A4_shot1_%E8%BF%87%E8%82%A9%E6%8E%A8%E9%95%9C.png) |
+
+| Shot 1 v2 — 过肩推镜（微调） | Shot 2 — 反打过肩 |
+|:---:|:---:|
+| ![雨末茶室过肩推镜v2](showcase/%E9%9B%A8%E6%9C%AB%E8%8C%B6%E5%AE%A4_shot1_v2_%E8%BF%87%E8%82%A9%E6%8E%A8%E9%95%9C.png) | ![雨末茶室反打过肩](showcase/%E9%9B%A8%E6%9C%AB%E8%8C%B6%E5%AE%A4_shot2_%E5%8F%8D%E6%89%93%E8%BF%87%E8%82%A9.png) |
+
+| Shot 2 v2 — 反打过肩（微调） | 花园石径（同叙事线） |
+|:---:|:---:|
+| ![雨末茶室反打过肩v2](showcase/%E9%9B%A8%E6%9C%AB%E8%8C%B6%E5%AE%A4_shot2_v2_%E5%8F%8D%E6%89%93%E8%BF%87%E8%82%A9.png) | ![雨末花园石径](showcase/%E9%9B%A8%E6%9C%AB%E8%8A%B1%E5%9B%AD%E7%9F%B3%E5%BE%84.png) |
+
+**跨镜一致性验证**：人物（服装/发型/气质）、场景（中式茶室）、氛围（雨末清冷调）在 3 镜 5 张图中保持一致，运镜变化（过肩推→反打过肩）产生自然的叙事推进感。
+
 ---
 
 ## 它和同类有什么不同
@@ -270,7 +294,10 @@ PerfectPhoto/
 │   └── negative-constraints.md
 ├── NextShotPhoto-SPEC.md    # 分镜尾帧生成器完整设计规范
 ├── perfectphoto-intro.md    # 项目简介
-├── showcase/                # 生成效果图（证明方法论能出片）
+├── showcase/                # 生成效果图 + 分镜故事板（雨末茶室3镜）
+├── scripts/
+│   └── verify.sh            # Skill 健康检查脚本（20 项）
+├── test-prompts.json        # 9 个标准化测试用例
 ├── README.md                # 本文件
 └── LICENSE                  # MIT
 ```
@@ -287,6 +314,7 @@ PerfectPhoto 已通过 2 个完整流程的实操验证（ImageGen + DragonCode 
 | 公子如玉 | 「山间泉水，有雾，公子如玉」 | 意图编译→选上田义彦大师→8步→人物锁定→导演笔记→冒险度安全→出图 | ✅ 全流程跑通 |
 | DragonCode 图生图变体 | 原图→3个姿势变化 | 背对背/骑车载她/并肩远望 | ✅ 人物一致 |
 | NextShotPhoto 分镜推导 | 首帧→推镜头+动作→尾帧 | 变换矩阵推导 + 8 项自动检查 + 视频生成提示词 | ✅ SPEC + SKILL 验证通过 |
+| NextShotPhoto 3 镜故事板 | 「雨末茶室」过肩推→反打过肩 | 跨 3 镜 5 张图，人物/场景/氛围锁定一致 | ✅ 人物不漂移 |
 
 所有新的功能模块（意图编译、大师预设、人物锁定、冒险度分级、规格语言约束）均已在实际对话中测试通过。
 
