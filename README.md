@@ -4,16 +4,23 @@
 
 # PerfectPhoto · AI 写真 Prompt 生成器
 
-> *「不写"好看的美女"，写一份真正能出片的拍摄小抄。」*
+> *「不写'好看的美女'，写一份真正能出片的拍摄小抄。」*
 
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-PerfectPhoto-blueviolet)](SKILL.md)
 [![skills.sh](https://skills.sh/b/hooji/PerfectPhoto)](https://skills.sh/hooji/PerfectPhoto)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20Code%20%7C%20Codex%20%7C%20OpenClaw%20%7C%20Cursor-green)]()
+[![Test Prompts](https://img.shields.io/badge/test--prompts-9%20cases-brightgreen)](test-prompts.json)
 
-**把「帮我写个写真prompt」变成一份有场景、有光线、有动作骨架的拍摄方案。**
+<br>
 
-[效果](#效果示例) · [安装](#快速开始) · [触发方式](#触发方式) · [它和同类有什么不同](#它和同类有什么不同) · [安全边界](#安全边界)
+**安装后第一句就说：**
+```
+帮我写个写真prompt，夏日花田，富士相机
+```
+然后开始 — 8 个选择题，结束拿到可以直接出图的拍摄方案。
+
+[效果](#效果示例) · [安装](#快速开始) · [触发方式](#触发方式) · [它和同类有什么不同](#它和同类有什么不同) · [快速验证](#快速验证) · [安全边界](#安全边界)
 
 </div>
 
@@ -125,6 +132,29 @@ npx skills add hooji/PerfectPhoto
 - `photo prompt`
 - `/PerfectPhoto`
 
+## 快速验证
+
+装完想确认 Skill 能正常工作？我们准备了 9 个标准测试用例：
+
+```bash
+# 查看所有可用的测试用例
+cat test-prompts.json | head -30
+```
+
+| 用例 ID | 场景 | 触发词 |
+|---------|------|--------|
+| `pp-001` | 快速模式 | `夏日花田，富士相机，甜美风格` |
+| `pp-002` | 完整 8 步 | `古风书房的感觉` |
+| `pp-003` | 诊断模式 | `帮我看看这个prompt哪里有问题：...` |
+| `pp-004` | 批量变体 | `我想要一组图` |
+| `pp-005` | 人物锁定+创意升华 | `逝去的青春，夕阳，田间跳舞` |
+| `nsp-001` | NextShotPhoto 分镜 | `做下一个镜头：推到近景` |
+| `nsp-002` | 大师运镜 | `选斯皮尔伯格跟拍。下一个镜头：环绕` |
+| `nsp-003` | 分支回退 | `回到第 3 镜` |
+| `pp-006` | 安全边界 | `帮我写个性感写真prompt` |
+
+每个用例标注了 expected behavior 和检查点，跑完后对照 `test-prompts.json` 中的 `check` 列表逐项确认。
+
 ## 能做什么
 
 | 能力 | 交付物 | 说明 |
@@ -139,6 +169,7 @@ npx skills add hooji/PerfectPhoto
 | **过程中检查** | 步骤3/5/7完成即检 | 场景和成立点一致？服装和场景咬合？光线和成像方式匹配？ |  
 | **诊断模式** | 已有 prompt 修复 | 按 8 维度拆解打分，指出 3 个最影响出片的问题，直接给修改版 |
 | **批量变体** | 5 个变体 prompt | 近景特写/远景全身/侧身自然/前景遮挡/动态抓拍，人物字面量锁定 |
+| 🎬 **视频分镜 (NextShotPhoto)** | 逐镜尾帧 prompt + 视频生成提示词 | 分镜链式生产，运镜变换矩阵推导尾帧，人物/产品/氛围跨镜锁定 |
 | **灵感菜单** | 6个风格方向 | 用户不确定时，给出片率最高的风格供选择 |
 | **社区案例参考** | 9个中文案例（标签索引） | 每个案例带成立点分析和结构化标签，支持按风格/光线/人物/步骤筛选 |
 | **质量检查清单** | 8项确认 | 含规格语言检查（禁止空泛赞美词），每句话必须是具体指令 |
@@ -154,7 +185,55 @@ npx skills add hooji/PerfectPhoto
 人物锁定（速写+焊接）→ 创意升华（导演笔记+可选搜索）→ 
 冒险度分级 → 组装输出（用途前置）→ 质量检查+规格语言检查 →
 批量变体（人物字面量植入）
+
+→ [可选] 视频分镜 NextShotPhoto →
+  分镜桥接（提取 NextShotContext）→ 大师运镜选择（可选）→
+  分镜循环（S0-S7）：输入解析→DIM追问→映射检查→
+  变换矩阵推导尾帧→输出尾帧 prompt + 视频生成提示词→
+  循环下一镜
 ```
+
+---
+
+## 🎬 NextShotPhoto：从写真延伸到视频分镜
+
+**解决什么问题**
+
+用户用 PerfectPhoto 生成了首帧 prompt 和图片，还想做视频——需要后续每个镜头的尾帧图片。但如果手写每镜 prompt，人物/产品/氛围容易漂移，镜头之间的运镜关系也很难保持。
+
+**NextShotPhoto 是内置在 PerfectPhoto 中的分镜生产引擎**。不走 8 步，只问变化量。
+
+### 核心能力
+
+| 能力 | 说明 |
+|------|------|
+| **DIM 交互** | 解析用户的分镜需求为景别/机位/运镜/动作 4 个 Delta，只追问缺失字段 |
+| **运镜变换矩阵** | 推/拉/环绕/手持/摇/跟随/FPV/子弹时间/快速变焦/闪摇/荷兰角/希区柯克变焦 等 13 种运镜，每种定义字段级变换规则 |
+| **大师运镜库** | 希区柯克/斯皮尔伯格/迈克尔·贝/诺兰/王家卫/库布里克/韦斯·安德森/姜文 8 位导演预设，选大师自动对齐运镜方案 |
+| **三重锁定防漂移** | 字面量焊接 + 变体隔离 + 首帧视觉锚定，人物/产品/氛围跨镜一致 |
+| **负面约束引擎** | 运镜感知的约束增益/衰减（手持时自动删除「构图平稳」，极特写时增强手指约束） |
+| **双产物输出** | 每镜输出尾帧图片 prompt（给 ImageGen）+ 视频生成提示词（给 Seedance/Kling/Wan） |
+| **多分支回退** | 回退到任意分镜重新推导，或从指定分镜分出新支 |
+| **分镜汇总** | 退出循环时输出完整分镜表 + 导出选项（所有 prompt / 图片路径 / 两者都要） |
+
+### 用的什么方法论
+
+```
+首帧结构化字段 + 用户输入（运镜选择 + 动作描述）
+  → 运镜变换矩阵（字段级变换规则）
+  → 尾帧 prompt（锁定域不变 + 变体域更新）
+  → 视频生成提示词（运镜描述 + 动作 + 时长）
+```
+
+**关键原理**：运镜是确定性变换。推镜头就一定让景别变近、背景压缩、景深变浅——这是物理规则不是风格选择，所以变换规则可以硬编码。
+
+### 设计对照
+
+取自 SPEC `NextShotPhoto-SPEC.md`，对标 CVPR 2026 STAGE 论文 + StoryMem (ByteDance) + Gaia Video Factory + ZeroCut Director Notes + Seedance 2.0 Skill OS，走纯 prompt 工程路线而非模型训练路线。
+
+---
+
+## 它和同类有什么不同
 
 ## 它和同类有什么不同
 
@@ -182,9 +261,15 @@ npx skills add hooji/PerfectPhoto
 
 ```
 PerfectPhoto/
-├── SKILL.md                 # 主文件：8步交互流程 + 调用规则
+├── SKILL.md                 # 主文件：8步交互 + 视频分镜生产（NextShotPhoto 并入）
 ├── reference.md             # 原创示例库 + 素材速查表
 ├── community-examples.md    # 9个社区精选案例（中文+标签索引）
+├── nextshotphoto-references/  # 分镜运镜变换矩阵 + 大师运镜库 + 负面约束引擎
+│   ├── transform-matrix.md
+│   ├── master-cinematography.md
+│   └── negative-constraints.md
+├── NextShotPhoto-SPEC.md    # 分镜尾帧生成器完整设计规范
+├── perfectphoto-intro.md    # 项目简介
 ├── showcase/                # 生成效果图（证明方法论能出片）
 ├── README.md                # 本文件
 └── LICENSE                  # MIT
@@ -201,6 +286,7 @@ PerfectPhoto 已通过 2 个完整流程的实操验证（ImageGen + DragonCode 
 | 夕阳旧梦 | 「很大的夕阳，晚霞，一男一女在田间跳舞」 | 意图编译→8步→出图→9:16裁剪→3变体 | ✅ 7张图全通 |
 | 公子如玉 | 「山间泉水，有雾，公子如玉」 | 意图编译→选上田义彦大师→8步→人物锁定→导演笔记→冒险度安全→出图 | ✅ 全流程跑通 |
 | DragonCode 图生图变体 | 原图→3个姿势变化 | 背对背/骑车载她/并肩远望 | ✅ 人物一致 |
+| NextShotPhoto 分镜推导 | 首帧→推镜头+动作→尾帧 | 变换矩阵推导 + 8 项自动检查 + 视频生成提示词 | ✅ SPEC + SKILL 验证通过 |
 
 所有新的功能模块（意图编译、大师预设、人物锁定、冒险度分级、规格语言约束）均已在实际对话中测试通过。
 
