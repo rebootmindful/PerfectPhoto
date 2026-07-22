@@ -663,6 +663,8 @@ Step 7: 组装完整 prompt + 输出映射报告
     foreground:      木桌边缘虚化放大
     background:      背景书架被压缩裁切
     depth:           景深变浅
+    depth_curve:     景深从深→浅（匀速收缩，终点最浅）
+    推荐快门：       180°（自然动态模糊）
   Step 4: 动作覆盖
     shot.action:     "人物抬头，眼睛看向杯口热气"
   Step 5: 运镜描述 → "镜头平滑向前推进，从平视中景推至近景"
